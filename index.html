@@ -1,0 +1,1279 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edgarrito AI - Asistente Virtual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --purple-neon: #a855f7;
+            --purple-dark: #7c3aed;
+            --purple-light: #c084fc;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-card: #141414<!DOCTYPE html>
+;
+            --white-neon: #ffffff;
+            --text-gray: #9ca3af;
+            --border-color: #1f1f1f;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-dark);
+            color: var(--white-neon);
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-darker);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--purple-neon), var(--purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 8px var(--purple-neon)); }
+            50% { filter: drop-shadow(0 0 16px var(--purple-neon)); }
+        }
+
+        .creator {
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-bottom: 16px;
+            font-style: italic;
+        }
+
+        .new-chat-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--purple-neon);
+            border-radius: 12px;
+            color: var(--purple-neon);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .new-chat-btn:hover {
+            background: var(--purple-neon);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .chat-history-item {
+            padding: 12px;
+            background: var(--bg-card);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-history-item:hover {
+            border-color: var(--purple-neon);
+            transform: translateX(4px);
+        }
+
+        .chat-history-item.active {
+            background: var(--purple-dark);
+            border-color: var(--purple-light);
+        }
+
+        .delete-chat-btn {
+            padding: 6px 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-gray);
+            cursor: pointer;
+            border-radius: 6px;
+            opacity: 0;
+        }
+
+        .chat-history-item:hover .delete-chat-btn {
+            opacity: 1;
+        }
+
+        .delete-chat-btn:hover {
+            background: var(--danger);
+            color: var(--white-neon);
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg-card);
+            border-radius: 8px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .stat-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--purple-neon);
+        }
+
+        .sidebar-credits {
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-gray);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-darker);
+        }
+
+        .header-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-card);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-gray);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            color: var(--white-neon);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--purple-neon), var(--purple-dark));
+            color: var(--white-neon);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+        }
+
+        .settings-btn {
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-gray);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            border-color: var(--purple-neon);
+            color: var(--purple-neon);
+            transform: rotate(90deg);
+        }
+
+        .language-bar {
+            padding: 12px 32px;
+            background: var(--bg-darker);
+            border-bottom: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .language-bar select {
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--purple-neon);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* CHAT MESSAGES */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--purple-dark);
+            border-radius: 4px;
+        }
+
+        .welcome-message {
+            max-width: 800px;
+            margin: 80px auto;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-message h2 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--purple-neon), var(--purple-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .capabilities {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .capability-card {
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .capability-card:hover {
+            border-color: var(--purple-neon);
+            transform: translateY(-4px);
+        }
+
+        .capability-icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .capability-card h3 {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .capability-card p {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .mode-hints {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .mode-hints p {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin: 8px 0;
+        }
+
+        .mode-hints strong {
+            color: var(--purple-neon);
+        }
+
+        /* MESSAGES */
+        .message {
+            margin-bottom: 24px;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, var(--purple-neon), var(--purple-dark));
+        }
+
+        .message-content {
+            margin-left: 48px;
+            padding: 16px 20px;
+            border-radius: 16px;
+            line-height: 1.6;
+        }
+
+        .message.user .message-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .message.ai .message-content {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .code-block {
+            margin: 16px 0 16px 48px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: var(--bg-darker);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-language {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--purple-neon);
+            text-transform: uppercase;
+        }
+
+        .copy-btn {
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--purple-neon);
+            border-radius: 6px;
+            color: var(--purple-neon);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: var(--purple-neon);
+            color: var(--bg-dark);
+        }
+
+        .code-content {
+            padding: 16px;
+            background: var(--bg-card);
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .generated-image {
+            width: 100%;
+            max-width: 512px;
+            border-radius: 12px;
+            margin: 16px 0 16px 48px;
+            box-shadow: 0 8px 24px rgba(168, 85, 247, 0.3);
+        }
+
+        /* INPUT */
+        .chat-input-container {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-darker);
+        }
+
+        .input-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            color: var(--white-neon);
+            font-size: 15px;
+            font-family: inherit;
+            resize: none;
+            max-height: 200px;
+            outline: none;
+        }
+
+        #userInput:focus {
+            border-color: var(--purple-neon);
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--purple-neon), var(--purple-dark));
+            border: none;
+            border-radius: 12px;
+            color: var(--white-neon);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 16px 20px;
+            margin-left: 48px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--purple-neon);
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.7; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        /* SETTINGS PANEL */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-content {
+            width: 600px;
+            max-height: 80vh;
+            background: var(--bg-darker);
+            border: 1px solid var(--purple-neon);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 24px 32px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(124, 58, 237, 0.1));
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-settings {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .close-settings:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: var(--white-neon);
+        }
+
+        .settings-body {
+            padding: 32px;
+            overflow-y: auto;
+            max-height: calc(80vh - 180px);
+        }
+
+        .setting-group {
+            margin-bottom: 32px;
+        }
+
+        .setting-group h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+
+        .radio-option {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+
+        .radio-option:hover {
+            border-color: var(--purple-neon);
+        }
+
+        .settings-footer {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .save-settings-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--purple-neon), var(--purple-dark));
+            border: none;
+            border-radius: 12px;
+            color: var(--white-neon);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .capabilities { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 240px; }
+            .capabilities { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">Edgarrito AI</h1>
+                <p class="creator">By Edgar Mota</p>
+                <button class="new-chat-btn" id="newChatBtn">
+                    <span>+</span> Nueva conversación
+                </button>
+            </div>
+            
+            <div class="chat-history" id="chatHistory"></div>
+            
+            <div class="sidebar-footer">
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Chats:</span>
+                        <span class="stat-value" id="totalChats">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mensajes:</span>
+                        <span class="stat-value" id="totalMessages">0</span>
+                    </div>
+                </div>
+                <div class="sidebar-credits">Powered by Edgarito 2.5</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="chat-header">
+                <div class="header-info">
+                    <h2 id="currentChatTitle">Nueva Conversación</h2>
+                    <p class="header-subtitle">Asistente especializado en código avanzado</p>
+                </div>
+                <div class="header-actions">
+                    <div class="mode-selector">
+                        <button class="mode-btn active" id="chatModeBtn">💬 Chat</button>
+                        <button class="mode-btn" id="codeModeBtn">💻 Código</button>
+                        <button class="mode-btn" id="imageModeBtn">🎨 Imagen</button>
+                    </div>
+                    <button class="settings-btn" id="settingsBtn">⚙️</button>
+                </div>
+            </div>
+
+            <div class="language-bar" id="languageBar">
+                <label>Lenguaje:</label>
+                <select id="languageSelect">
+                    <option value="csharp">C#</option>
+                    <option value="html">HTML</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python</option>
+                </select>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-message">
+                    <div class="welcome-icon">🤖</div>
+                    <h2>¡Qué onda! Soy Edgarrito AI</h2>
+                    <p>Creado por Edgar Mota (aka Edgarrito)</p>
+                    <div class="capabilities">
+                        <div class="capability-card">
+                            <span class="capability-icon">🧠</span>
+                            <h3>Edgarrito 2.0 Flash</h3>
+                            <p>IA de última generación</p>
+                        </div>
+                        <div class="capability-card">
+                            <span class="capability-icon">💻</span>
+                            <h3>Código Avanzado</h3>
+                            <p>Arquitecturas empresariales</p>
+                        </div>
+                        <div class="capability-card">
+                            <span class="capability-icon">🎨</span>
+                            <h3>Genera Imágenes</h3>
+                            <p>IA artística integrada</p>
+                        </div>
+                        <div class="capability-card">
+                            <span class="capability-icon">📁</span>
+                            <h3>Archivos</h3>
+                            <p>Sube código e imágenes</p>
+                        </div>
+                    </div>
+                    <div class="mode-hints">
+                        <p><strong>💬 Chat:</strong> Conversación natural</p>
+                        <p><strong>💻 Código:</strong> Arquitecturas avanzadas</p>
+                        <p><strong>🎨 Imagen:</strong> Generación con IA</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <textarea id="userInput" placeholder="Escribe tu mensaje..." rows="1"></textarea>
+                    <button class="send-btn" id="sendBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-content">
+            <div class="settings-header">
+                <h2>⚙️ Configuración</h2>
+                <button class="close-settings" id="closeSettings">✕</button>
+            </div>
+            <div class="settings-body">
+                <div class="setting-group">
+                    <h3>🗣️ Personalidad</h3>
+                    <label class="radio-option">
+                        <input type="radio" name="personality" value="informal" checked>
+                        <span><strong>Informal</strong> - Casual, usa "carnal"</span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="personality" value="formal">
+                        <span><strong>Formal</strong> - Profesional</span>
+                    </label>
+                </div>
+                <div class="setting-group">
+                    <h3>ℹ️ Sobre Edgarrito AI</h3>
+                    <p style="color: var(--text-gray); padding: 16px; background: var(--bg-card); border-radius: 12px;">
+                        <strong style="color: var(--white-neon);">Creador:</strong> Edgar Mota (aka Edgarrito)<br>
+                        <strong style="color: var(--white-neon);">Versión:</strong> 3.0 Web<br>
+                        <strong style="color: var(--white-neon);">Motor:</strong> Edgar Garito 2.0
+                    </p>
+                </div>
+            </div>
+            <div class="settings-footer">
+                <button class="save-settings-btn" id="saveSettings">💾 Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from '@google/generative-ai';
+
+        // ⚠️ IMPORTANTE: Cambia esta API key por la tuya (la voy a ofuscar después)
+        const API_KEY = 'AIzaSyBC52bfiEgC7kDZO9X2O4FTxY8s0lMnaGI';
+        const IMAGE_API = 'https://image.pollinations.ai/prompt/';
+
+        class EdgarritoAI {
+            constructor() {
+                this.chats = [];
+                this.currentChatId = null;
+                this.currentMode = 'chat';
+                this.settings = this.loadSettings();
+                
+                this.genAI = new GoogleGenerativeAI(API_KEY);
+                this.model = this.genAI.getGenerativeModel({ 
+                    model: 'gemini-2.5-flash'
+                });
+                this.chat = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.loadChatsFromStorage();
+                this.setupEventListeners();
+                this.updateStats();
+            }
+
+            loadSettings() {
+                const saved = localStorage.getItem('edgarrito_settings');
+                return saved ? JSON.parse(saved) : { personality: 'informal' };
+            }
+
+            startNewGeminiChat() {
+                const systemPrompt = this.settings.personality === 'informal' 
+                    ? "Eres Edgarrito AI, asistente experto en programación. Hablas casual como carnal mexicano. Especialista en C#, HTML y código avanzado." 
+                    : "Eres Edgarrito AI, asistente profesional de programación. Especialista en C#, HTML y arquitecturas de software.";
+
+                this.chat = this.model.startChat({
+                    history: [
+                        { role: 'user', parts: [{ text: systemPrompt }] },
+                        { role: 'model', parts: [{ text: '¡Listo para ayudarte!' }] }
+                    ]
+                });
+            }
+
+            async generateAIResponse(message) {
+                try {
+                    if (!this.chat) this.startNewGeminiChat();
+                    
+                    const result = await this.chat.sendMessage(message);
+                    const text = await result.response.text();
+                    
+                    return this.parseResponse(text);
+                } catch (error) {
+                    return { text: `Error: ${error.message}`, code: null };
+                }
+            }
+
+            parseResponse(response) {
+                const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+                const matches = [...response.matchAll(codeBlockRegex)];
+
+                if (matches.length > 0) {
+                    const code = { language: matches[0][1] || 'text', content: matches[0][2].trim() };
+                    const text = response.replace(matches[0][0], '').trim();
+                    return { text: text || '¡Código generado!', code };
+                }
+
+                return { text: response, code: null };
+            }
+
+            async generateImage(prompt) {
+                const imageUrl = `${IMAGE_API}${encodeURIComponent(prompt)}?width=1024&height=1024&model=flux&nologo=true`;
+                return { text: `🎨 Imagen: "${prompt}"`, image: imageUrl };
+            }
+
+            setupEventListeners() {
+                document.getElementById('sendBtn').addEventListener('click', () => this.sendMessage());
+                document.getElementById('newChatBtn').addEventListener('click', () => this.createNewChat());
+                
+                document.getElementById('chatModeBtn').addEventListener('click', () => this.switchMode('chat'));
+                document.getElementById('codeModeBtn').addEventListener('click', () => this.switchMode('code'));
+                document.getElementById('imageModeBtn').addEventListener('click', () => this.switchMode('image'));
+                
+                const userInput = document.getElementById('userInput');
+                userInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                userInput.addEventListener('input', () => {
+                    userInput.style.height = 'auto';
+                    userInput.style.height = userInput.scrollHeight + 'px';
+                });
+
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    document.getElementById('settingsPanel').style.display = 'flex';
+                });
+                document.getElementById('closeSettings').addEventListener('click', () => {
+                    document.getElementById('settingsPanel').style.display = 'none';
+                });
+                document.getElementById('saveSettings').addEventListener('click', () => {
+                    this.settings.personality = document.querySelector('input[name="personality"]:checked').value;
+                    localStorage.setItem('edgarrito_settings', JSON.stringify(this.settings));
+                    this.startNewGeminiChat();
+                    document.getElementById('settingsPanel').style.display = 'none';
+                    this.addMessage('system', '⚙️ Configuración guardada');
+                });
+            }
+
+            switchMode(mode) {
+                this.currentMode = mode;
+                
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById(mode + 'ModeBtn').classList.add('active');
+
+                const languageBar = document.getElementById('languageBar');
+                languageBar.style.display = mode === 'code' ? 'flex' : 'none';
+            }
+
+            async sendMessage() {
+                const input = document.getElementById('userInput');
+                const message = input.value.trim();
+                
+                if (!message) return;
+
+                if (!this.currentChatId) this.createNewChat();
+
+                if (this.currentMode === 'image') {
+                    this.addMessage('user', message);
+                    input.value = '';
+                    
+                    this.showTypingIndicator();
+                    const result = await this.generateImage(message);
+                    this.hideTypingIndicator();
+                    
+                    this.addMessage('ai', result.text, null, result.image);
+                    this.saveCurrentChat();
+                    return;
+                }
+
+                let finalMessage = message;
+                if (this.currentMode === 'code') {
+                    const lang = document.getElementById('languageSelect').value;
+                    const langNames = { csharp: 'C#', html: 'HTML', javascript: 'JavaScript', python: 'Python' };
+                    finalMessage = `[Lenguaje: ${langNames[lang]}] ${message}`;
+                }
+
+                this.addMessage('user', message);
+                input.value = '';
+                input.style.height = 'auto';
+
+                this.showTypingIndicator();
+                const response = await this.generateAIResponse(finalMessage);
+                this.hideTypingIndicator();
+
+                if (response.code) {
+                    this.addMessage('ai', response.text, response.code);
+                } else {
+                    this.addMessage('ai', response.text);
+                }
+
+                this.saveCurrentChat();
+            }
+
+            addMessage(type, content, codeBlock = null, imageUrl = null) {
+                const messagesContainer = document.getElementById('chatMessages');
+                
+                const welcomeMsg = messagesContainer.querySelector('.welcome-message');
+                if (welcomeMsg) welcomeMsg.remove();
+
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+
+                const avatar = type === 'user' ? '👤' : (type === 'system' ? '⚙️' : '🤖');
+                const name = type === 'user' ? 'Tú' : (type === 'system' ? 'Sistema' : 'Edgarrito AI');
+
+                let html = `
+                    <div class="message-header">
+                        <div class="message-avatar">${avatar}</div>
+                        <div class="message-name">${name}</div>
+                    </div>
+                    <div class="message-content">${this.formatContent(content)}</div>
+                `;
+
+                if (imageUrl) {
+                    html += `<img src="${imageUrl}" class="generated-image" alt="Generated">`;
+                }
+
+                if (codeBlock) {
+                    html += this.createCodeBlock(codeBlock.language, codeBlock.content);
+                }
+
+                messageDiv.innerHTML = html;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                if (codeBlock) {
+                    const copyBtn = messageDiv.querySelector('.copy-btn');
+                    if (copyBtn) {
+                        copyBtn.addEventListener('click', () => {
+                            navigator.clipboard.writeText(codeBlock.content);
+                            copyBtn.textContent = '✅ Copiado';
+                            setTimeout(() => copyBtn.textContent = '📋 Copiar', 2000);
+                        });
+                    }
+                }
+
+                if (this.currentChatId) {
+                    const chat = this.chats.find(c => c.id === this.currentChatId);
+                    if (chat) {
+                        chat.messages.push({ type, content, codeBlock, imageUrl, timestamp: Date.now() });
+                    }
+                }
+            }
+
+            formatContent(content) {
+                return content
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+            }
+
+            createCodeBlock(language, code) {
+                const langNames = {
+                    javascript: 'JavaScript', csharp: 'C#', cpp: 'C++',
+                    c: 'C', html: 'HTML', css: 'CSS', python: 'Python'
+                };
+
+                return `
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span class="code-language">${langNames[language] || language}</span>
+                            <button class="copy-btn">📋 Copiar</button>
+                        </div>
+                        <div class="code-content">
+                            <pre>${this.escapeHtml(code)}</pre>
+                        </div>
+                    </div>
+                `;
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            showTypingIndicator() {
+                const messagesContainer = document.getElementById('chatMessages');
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                typingDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+                messagesContainer.appendChild(typingDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            hideTypingIndicator() {
+                const indicator = document.getElementById('typingIndicator');
+                if (indicator) indicator.remove();
+            }
+
+            createNewChat() {
+                const chat = {
+                    id: Date.now(),
+                    title: 'Nueva Conversación',
+                    messages: [],
+                    timestamp: Date.now()
+                };
+
+                this.chats.unshift(chat);
+                this.currentChatId = chat.id;
+                this.startNewGeminiChat();
+                this.clearChatMessages();
+                this.renderChatHistory();
+                this.saveChatsToStorage();
+                this.updateStats();
+
+                document.getElementById('currentChatTitle').textContent = chat.title;
+            }
+
+            clearChatMessages() {
+                document.getElementById('chatMessages').innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">🤖</div>
+                        <h2>¡Qué onda! Soy Edgarrito AI</h2>
+                        <p>Creado por Edgar Mota (aka Edgarrito)</p>
+                        <div class="capabilities">
+                            <div class="capability-card">
+                                <span class="capability-icon">🧠</span>
+                                <h3>Edgarrito 2.5 Pro</h3>
+                                <p>IA de ultima generación</p>
+                            </div>
+                            <div class="capability-card">
+                                <span class="capability-icon">💻</span>
+                                <h3>Código Avanzado</h3>
+                                <p>Arquitecturas empresariales</p>
+                            </div>
+                            <div class="capability-card">
+                                <span class="capability-icon">🎨</span>
+                                <h3>Genera Imágenes</h3>
+                                <p>IA artística integrada</p>
+                            </div>
+                            <div class="capability-card">
+                                <span class="capability-icon">📁</span>
+                                <h3>Archivos</h3>
+                                <p>Sube código e imágenes</p>
+                            </div>
+                        </div>
+                        <div class="mode-hints">
+                            <p><strong>💬 Chat:</strong> Conversación natural</p>
+                            <p><strong>💻 Código:</strong> Arquitecturas avanzadas</p>
+                            <p><strong>🎨 Imagen:</strong> Generación con IA</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            saveCurrentChat() {
+                if (!this.currentChatId) return;
+
+                const chat = this.chats.find(c => c.id === this.currentChatId);
+                if (chat && chat.messages.length > 0) {
+                    if (chat.title === 'Nueva Conversación') {
+                        const firstUserMsg = chat.messages.find(m => m.type === 'user');
+                        if (firstUserMsg) {
+                            chat.title = firstUserMsg.content.substring(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '');
+                        }
+                    }
+                }
+
+                this.saveChatsToStorage();
+                this.renderChatHistory();
+            }
+
+            renderChatHistory() {
+                const historyContainer = document.getElementById('chatHistory');
+                historyContainer.innerHTML = '';
+
+                this.chats.forEach(chat => {
+                    const chatItem = document.createElement('div');
+                    chatItem.className = 'chat-history-item' + (chat.id === this.currentChatId ? ' active' : '');
+                    
+                    const preview = chat.messages.length > 0 
+                        ? chat.messages[chat.messages.length - 1].content.substring(0, 50) 
+                        : 'Sin mensajes';
+
+                    chatItem.innerHTML = `
+                        <div class="chat-item-content">
+                            <div class="chat-item-title">${chat.title}</div>
+                            <div class="chat-item-preview">${preview}</div>
+                        </div>
+                        <button class="delete-chat-btn" title="Eliminar">🗑️</button>
+                    `;
+
+                    chatItem.querySelector('.chat-item-content').addEventListener('click', () => this.loadChat(chat.id));
+                    chatItem.querySelector('.delete-chat-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (confirm('¿Eliminar esta conversación?')) {
+                            this.chats = this.chats.filter(c => c.id !== chat.id);
+                            if (this.currentChatId === chat.id) {
+                                this.currentChatId = null;
+                                this.clearChatMessages();
+                            }
+                            this.saveChatsToStorage();
+                            this.renderChatHistory();
+                            this.updateStats();
+                        }
+                    });
+                    
+                    historyContainer.appendChild(chatItem);
+                });
+            }
+
+            loadChat(chatId) {
+                this.currentChatId = chatId;
+                const chat = this.chats.find(c => c.id === chatId);
+                
+                if (!chat) return;
+
+                this.clearChatMessages();
+                this.startNewGeminiChat();
+                
+                chat.messages.forEach(msg => {
+                    this.addMessageToUI(msg.type, msg.content, msg.codeBlock, msg.imageUrl);
+                });
+
+                document.getElementById('currentChatTitle').textContent = chat.title;
+                this.renderChatHistory();
+            }
+
+            addMessageToUI(type, content, codeBlock = null, imageUrl = null) {
+                const messagesContainer = document.getElementById('chatMessages');
+                
+                const welcomeMsg = messagesContainer.querySelector('.welcome-message');
+                if (welcomeMsg) welcomeMsg.remove();
+
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+
+                const avatar = type === 'user' ? '👤' : (type === 'system' ? '⚙️' : '🤖');
+                const name = type === 'user' ? 'Tú' : (type === 'system' ? 'Sistema' : 'Edgarrito AI');
+
+                let html = `
+                    <div class="message-header">
+                        <div class="message-avatar">${avatar}</div>
+                        <div class="message-name">${name}</div>
+                    </div>
+                    <div class="message-content">${this.formatContent(content)}</div>
+                `;
+
+                if (imageUrl) {
+                    html += `<img src="${imageUrl}" class="generated-image" alt="Generated">`;
+                }
+
+                if (codeBlock) {
+                    html += this.createCodeBlock(codeBlock.language, codeBlock.content);
+                }
+
+                messageDiv.innerHTML = html;
+                messagesContainer.appendChild(messageDiv);
+
+                if (codeBlock) {
+                    const copyBtn = messageDiv.querySelector('.copy-btn');
+                    if (copyBtn) {
+                        copyBtn.addEventListener('click', () => {
+                            navigator.clipboard.writeText(codeBlock.content);
+                            copyBtn.textContent = '✅ Copiado';
+                            setTimeout(() => copyBtn.textContent = '📋 Copiar', 2000);
+                        });
+                    }
+                }
+            }
+
+            saveChatsToStorage() {
+                localStorage.setItem('edgarrito_chats', JSON.stringify(this.chats));
+            }
+
+            loadChatsFromStorage() {
+                const stored = localStorage.getItem('edgarrito_chats');
+                if (stored) {
+                    this.chats = JSON.parse(stored);
+                    this.renderChatHistory();
+                }
+            }
+
+            updateStats() {
+                const totalMessages = this.chats.reduce((sum, chat) => sum + chat.messages.length, 0);
+                document.getElementById('totalChats').textContent = this.chats.length;
+                document.getElementById('totalMessages').textContent = totalMessages;
+            }
+        }
+
+        // INICIALIZAR
+        window.addEventListener('DOMContentLoaded', () => {
+            window.edgarritoAI = new EdgarritoAI();
+            console.log('🤖 Edgarrito AI Web iniciado');
+        });
+    </script>
+</body>
+</html>
